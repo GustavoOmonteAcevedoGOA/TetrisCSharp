@@ -30,13 +30,15 @@ namespace Tetris.view
         public BlockQueue BlockQueue { get; }
         public bool GameOver { get; private set; }
         public int Score { get; private set; }
-
+        public Block HeldBLock { get; private set; }
+        public bool CanHold { get; private set; }
 
         public GameState()
         {
             GameGrid = new GameGrid(22, 10);
             BlockQueue = new BlockQueue();
             CurrentBlock = BlockQueue.GetAndUpdate();
+            CanHold = true;
         }
 
         private bool BlockFits()
@@ -50,6 +52,28 @@ namespace Tetris.view
             }
 
             return true;
+        }
+
+        public void HoldBlock()
+        {
+            if (!CanHold)
+            {
+                return;
+            }
+
+            if (HeldBLock == null)
+            {
+                HeldBLock = CurrentBlock;
+                CurrentBlock = BlockQueue.GetAndUpdate();
+            }
+            else
+            {
+                Block tmp = CurrentBlock;
+                CurrentBlock = HeldBLock;
+                HeldBLock = tmp;
+            }
+
+            CanHold = false;
         }
 
         public void RotateBlockCW()
@@ -113,6 +137,7 @@ namespace Tetris.view
             else
             {
                 CurrentBlock = BlockQueue.GetAndUpdate();
+                CanHold = true;
             }
         }
 
